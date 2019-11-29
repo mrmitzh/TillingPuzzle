@@ -13,6 +13,15 @@ public class Tile {
     int height;
     int width;
     int spin;
+
+    public int getArea() {
+        return area;
+    }
+
+    public void setArea(int area) {
+        this.area = area;
+    }
+
     int area;
 
     public Tile(char[][] t){

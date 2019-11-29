@@ -10,6 +10,7 @@ public class ReadFile {
     String filePath = "";
     char[][] fileContent;
     List<Tile> tiles;
+    Tile board;
     int leftMost = Integer.MAX_VALUE;
     int upMost = Integer.MAX_VALUE;
     int rightMost = Integer.MIN_VALUE;
@@ -83,7 +84,17 @@ public class ReadFile {
                 }
             }
         }
-
+        // find the board according to the area
+        int index = 0;
+        int maxArea = 0;
+        for(int i = 0; i < tiles.size(); i ++){
+            if(tiles.get(i).getArea() > maxArea){
+                maxArea = tiles.get(i).getArea();
+                index = i;
+            }
+        }
+        board = tiles.get(index);
+        tiles.remove(index);
     }
 
     public void find(char[][] a, boolean[][] visited, int i, int j){
