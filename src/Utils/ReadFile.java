@@ -9,8 +9,8 @@ import java.util.List;
 public class ReadFile {
     String filePath = "";
     char[][] fileContent;
-    List<Tile> tiles;
-    Tile board;
+    public List<Tile> tiles;
+    public Tile board;
     int leftMost = Integer.MAX_VALUE;
     int upMost = Integer.MAX_VALUE;
     int rightMost = Integer.MIN_VALUE;

@@ -5,10 +5,14 @@ import java.util.List;
 
 public class CoverArray {
     int columnNum = 0;
+    int rowNum = 0;
     public int[][] coverArray;
+    int tileNum = 0;
+
     public CoverArray(List<Tile> tiles, Tile board){
         List<int[]> arrays = new ArrayList<>();
-        columnNum = board.data.length * board.data[0].length + tiles.size();
+        this.tileNum = tiles.size();
+        columnNum = board.area + tiles.size();
         for(int i = 0; i < tiles.size(); i ++){
             Tile t = tiles.get(i);
 
@@ -26,6 +30,7 @@ public class CoverArray {
                 if(row[j] == 1)coverArray[i][j] = 1;
             }
         }
+        rowNum = coverArray.length;
     }
 
     public void check(char[][] data, char[][] boardData, List<int[]> arrays, int index, int tileCount){
