@@ -13,6 +13,11 @@ public class TilingPuzzle {
     Stack<Node> stack;
     Stack<Node> solution;
     public static void main(String[] args) {
+        if(args.length != 1)
+        {
+            System.out.println("Usage: TilingPuzzle FileName");
+            System.exit(0);
+        }
         ReadFile readFile = new ReadFile(args[0]);
         CoverArray coverArray = new CoverArray(readFile.tiles, readFile.board);
         TilingPuzzle tilingPuzzle = new TilingPuzzle();
@@ -47,29 +52,30 @@ public class TilingPuzzle {
     public void cover(ColumnNode columnNode){
         columnNode.left.right = columnNode.right;
         columnNode.right.left = columnNode.left;
-        Node node = columnNode.down;
-        while(node != columnNode){
-            Node innerNode = node.right;
-            while(innerNode != node){
-                innerNode.down.up = innerNode.up;
-                innerNode.up.down = innerNode.down;
-                innerNode.head.size --;
+        for(Node row = columnNode.down; row != columnNode; row = row.down)
+        {
+            for(Node rightNode = row.right; rightNode != row; rightNode = rightNode.right)
+            {
+                rightNode.up.down = rightNode.down;
+                rightNode.down.up = rightNode.up;
+                rightNode.head.size--;
             }
         }
     }
 
     public void uncover(ColumnNode columnNode){
-        Node node =columnNode.up;
-        while(node != columnNode){
-            Node innerNode = node.left;
-            while(innerNode != node){
-                innerNode.head.size++;
-                innerNode.down.up = innerNode;
-                innerNode.up.down = innerNode;
+        Node colNode =columnNode.up;
+        for(Node rowNode = colNode.up; rowNode != colNode; rowNode = rowNode.up)
+        {
+            for(Node leftNode = rowNode.left; leftNode != rowNode; leftNode = leftNode.left)
+            {
+                leftNode.up.down = leftNode;
+                leftNode.down.up = leftNode;
+                leftNode.head.size ++;
             }
         }
-        columnNode.right.left = columnNode;
-        columnNode.left.right = columnNode;
+        colNode.right.left = colNode;
+        colNode.left.right = colNode;
     }
 
     public ColumnNode findStartColumn(LinkArray linkArray){
