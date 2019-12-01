@@ -4,6 +4,7 @@ import Domain.LinkArray;
 import Domain.Node;
 import Utils.ReadFile;
 
+import java.util.Arrays;
 import java.util.List;
 import java.util.Stack;
 
@@ -27,9 +28,27 @@ public class TilingPuzzle {
         tilingPuzzle.solve(tilingPuzzle.linkArray);
     }
 
+    public void printSolution(Stack<Node> solution)
+    {
+        // just printout the row ..
+        Node[] arr = new Node[solution.size()];
+        Stack<Node> copySolution = (Stack<Node>) solution.clone();
+        for(int i = arr.length - 1 ; i >= 0; i--)
+        {
+            arr[i] = copySolution.pop();
+        }
+        for(Node node:arr)
+        {
+            System.out.print(node.row);
+        }
+        System.out.println();
+    }
+
     public void solve(LinkArray linkArray){
         if(linkArray.h.right == linkArray.h || linkArray.h.left.col < linkArray.tileNum){
             //Finished
+            printSolution(solution);
+            return;
         }
         ColumnNode nextColumn = findStartColumn(linkArray);
         cover(nextColumn);
@@ -41,12 +60,11 @@ public class TilingPuzzle {
             solve(linkArray);
             nextNode = solution.pop();
             nextColumn = nextNode.head;
-            for(Node rightNode = nextNode.right; rightNode != nextNode; rightNode = rightNode.right){
-                uncover(rightNode.head);
+            for(Node leftNode = nextNode.left; leftNode != nextNode; leftNode = leftNode.left){
+                uncover(leftNode.head);
             }
         }
         uncover(nextColumn);
-        return;
     }
 
     public void cover(ColumnNode columnNode){
@@ -88,6 +106,7 @@ public class TilingPuzzle {
                 minSize = cur.size;
                 minNode = cur;
             }
+            cur = cur.right;
         }
         return minNode;
     }
