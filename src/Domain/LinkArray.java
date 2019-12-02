@@ -35,6 +35,7 @@ public class LinkArray {
             columnNodes.add(columnNode);
         }
 
+        //initialize all the nodes
         for(int i = 0; i < ca.columnNum; i ++){
             int size = 0;
             for(int j = 0; j < ca.rowNum; j ++){
@@ -54,13 +55,14 @@ public class LinkArray {
             columnNodes.get(i).size = size;
         }
 
+        //initialize the rows
         for(int i = 0; i < ca.rowNum; i ++){
             Node prev = null;
             Node head = null;
             for(int j = 0; j < ca.columnNum; j ++){
                 if(nodes[i][j] == null)continue;
                 Node cur = nodes[i][j];
-                if(j == 0){
+                if(head == null){
                     head = cur;
                     prev = cur;
                 }else{
@@ -76,9 +78,10 @@ public class LinkArray {
         for(int i = 0; i < ca.columnNum; i ++){
             Node prev = null;
             ColumnNode head = columnNodes.get(i);
+            Node cur = head;
             for(int j = 0; j < ca.rowNum; j ++){
                 if(nodes[j][i] == null)continue;
-                Node cur = nodes[j][i];
+                cur = nodes[j][i];
                 cur.head = head;
                 if(prev == null){
                     cur.up = head;
@@ -89,8 +92,8 @@ public class LinkArray {
                 }
                 prev = cur;
             }
-            prev.down = head;
-            head.up = prev;
+            cur.down = head;
+            head.up = cur;
         }
     }
 
