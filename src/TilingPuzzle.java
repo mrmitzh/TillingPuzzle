@@ -4,6 +4,7 @@ import Domain.LinkArray;
 import Domain.Node;
 import Utils.ReadFile;
 
+import java.util.Arrays;
 import java.util.List;
 import java.util.Stack;
 
@@ -13,6 +14,11 @@ public class TilingPuzzle {
     Stack<Node> stack;
     Stack<Node> solution;
     public static void main(String[] args) {
+        if(args.length != 1)
+        {
+            System.out.println("Usage: TilingPuzzle FileName");
+            System.exit(0);
+        }
         ReadFile readFile = new ReadFile(args[0]);
         CoverArray coverArray = new CoverArray(readFile.tiles, readFile.board);
         TilingPuzzle tilingPuzzle = new TilingPuzzle();
@@ -22,9 +28,27 @@ public class TilingPuzzle {
         tilingPuzzle.solve(tilingPuzzle.linkArray);
     }
 
+    public void printSolution(Stack<Node> solution)
+    {
+        // just printout the row ..
+        Node[] arr = new Node[solution.size()];
+        Stack<Node> copySolution = (Stack<Node>) solution.clone();
+        for(int i = arr.length - 1 ; i >= 0; i--)
+        {
+            arr[i] = copySolution.pop();
+        }
+        for(Node node:arr)
+        {
+            System.out.print(node.row);
+        }
+        System.out.println();
+    }
+
     public void solve(LinkArray linkArray){
         if(linkArray.h.right == linkArray.h || linkArray.h.left.col < linkArray.tileNum){
             //Finished
+            printSolution(solution);
+            return;
         }
         ColumnNode nextColumn = findStartColumn(linkArray);
         cover(nextColumn);
@@ -36,40 +60,40 @@ public class TilingPuzzle {
             solve(linkArray);
             nextNode = solution.pop();
             nextColumn = nextNode.head;
-            for(Node rightNode = nextNode.right; rightNode != nextNode; rightNode = rightNode.right){
-                uncover(rightNode.head);
+            for(Node leftNode = nextNode.left; leftNode != nextNode; leftNode = leftNode.left){
+                uncover(leftNode.head);
             }
         }
         uncover(nextColumn);
-        return;
     }
 
     public void cover(ColumnNode columnNode){
         columnNode.left.right = columnNode.right;
         columnNode.right.left = columnNode.left;
-        Node node = columnNode.down;
-        while(node != columnNode){
-            Node innerNode = node.right;
-            while(innerNode != node){
-                innerNode.down.up = innerNode.up;
-                innerNode.up.down = innerNode.down;
-                innerNode.head.size --;
+        for(Node row = columnNode.down; row != columnNode; row = row.down)
+        {
+            for(Node rightNode = row.right; rightNode != row; rightNode = rightNode.right)
+            {
+                rightNode.up.down = rightNode.down;
+                rightNode.down.up = rightNode.up;
+                rightNode.head.size--;
             }
         }
     }
 
     public void uncover(ColumnNode columnNode){
-        Node node =columnNode.up;
-        while(node != columnNode){
-            Node innerNode = node.left;
-            while(innerNode != node){
-                innerNode.head.size++;
-                innerNode.down.up = innerNode;
-                innerNode.up.down = innerNode;
+        Node colNode =columnNode.up;
+        for(Node rowNode = colNode.up; rowNode != colNode; rowNode = rowNode.up)
+        {
+            for(Node leftNode = rowNode.left; leftNode != rowNode; leftNode = leftNode.left)
+            {
+                leftNode.up.down = leftNode;
+                leftNode.down.up = leftNode;
+                leftNode.head.size ++;
             }
         }
-        columnNode.right.left = columnNode;
-        columnNode.left.right = columnNode;
+        colNode.right.left = colNode;
+        colNode.left.right = colNode;
     }
 
     public ColumnNode findStartColumn(LinkArray linkArray){
@@ -82,6 +106,7 @@ public class TilingPuzzle {
                 minSize = cur.size;
                 minNode = cur;
             }
+            cur = cur.right;
         }
         return minNode;
     }
