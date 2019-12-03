@@ -12,6 +12,7 @@ public class TilingPuzzle {
     Tile board;
     List<Tile> tiles;
     ArrayList<char[][]> result;
+    int level = 0;
 
     public static void main(String[] args) {
         if(args.length != 1)
@@ -57,9 +58,14 @@ public class TilingPuzzle {
             char c= (char)('a' + index);
             for(int i = tiles.size(); i < row.length; i ++){
                 if(row[i] == 1){
-                    int x = (i-tiles.size()) / res[0].length;
-                    int y = (i-tiles.size()) % res[0].length;
-                    res[x][y] = c;
+                    int position = i-tiles.size();
+                    for(int x = 0; x < coverArray.boardidx.length; x ++){
+                        for(int y = 0; y < coverArray.boardidx[0].length; y ++){
+                            if(coverArray.boardidx[x][y] == position){
+                                res[x][y] = c;
+                            }
+                        }
+                    }
                 }
             }
         }
@@ -101,6 +107,7 @@ public class TilingPuzzle {
     }
 
     public void solve(LinkArray linkArray){
+        level ++;
         if(linkArray.h.right == linkArray.h || linkArray.h.left.col < linkArray.tileNum){
             //Finished
             char[][] generatedSolution = generateSolution(solution);
@@ -123,6 +130,7 @@ public class TilingPuzzle {
             }
         }
         uncover(nextColumn);
+        level --;
     }
 
     public void cover(ColumnNode columnNode){
@@ -158,7 +166,17 @@ public class TilingPuzzle {
         int minSize = Integer.MAX_VALUE;
         ColumnNode minNode = head;
         ColumnNode cur = head.right;
+        // check area to see if there are extra tiles
+        int boardArea = board.getArea();
+        int total = 0;
+        for(int i = 0; i < tiles.size(); i ++){
+            total += tiles.get(i).getArea();
+        }
         while(cur != head){
+            if(total > boardArea && cur.col < tiles.size()){
+                cur = cur.right;
+                continue;
+            }
             if(cur.size < minSize){
                 minSize = cur.size;
                 minNode = cur;
