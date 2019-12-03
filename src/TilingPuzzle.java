@@ -40,6 +40,13 @@ public class TilingPuzzle {
         Node[] arr = new Node[solution.size()];
         Stack<Node> copySolution = (Stack<Node>) solution.clone();
         char[][] res = new char[board.data.length][board.data[0].length];
+        for(int i = 0; i < res.length;i++)
+        {
+            for(int j = 0; j < res[0].length;j++)
+            {
+                res[i][j] = ' ';
+            }
+        }
         for(int i = arr.length - 1 ; i >= 0; i--)
         {
             arr[i] = copySolution.pop();
