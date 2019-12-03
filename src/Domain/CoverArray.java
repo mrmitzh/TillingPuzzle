@@ -7,12 +7,14 @@ public class CoverArray {
     int columnNum = 0;
     int rowNum = 0;
     public int[][] coverArray;
+    private int[][] boardidx;
     int tileNum = 0;
 
     public CoverArray(List<Tile> tiles, Tile board){
         List<int[]> arrays = new ArrayList<>();
         this.tileNum = tiles.size();
         columnNum = board.area + tiles.size();
+        buildBoardIdxArray(board);
         for(int i = 0; i < tiles.size(); i ++){
             Tile t = tiles.get(i);
 
@@ -36,6 +38,21 @@ public class CoverArray {
         rowNum = coverArray.length;
     }
 
+    private void buildBoardIdxArray(Tile board) {
+        boardidx = new int[board.data.length][board.data[0].length];
+        int cnt = 0;
+        for (int r = 0; r < board.data.length; r++) {
+            for (int c = 0; c < board.data[0].length; c++) {
+                if (board.data[r][c] != ' ') {
+                    boardidx[r][c] = cnt;
+                    cnt++;
+                } else {
+                    boardidx[r][c] = -1;
+                }
+            }
+        }
+    }
+
     public void check(char[][] data, char[][] boardData, List<int[]> arrays, int index, int tileCount){
         int tileHeight = data.length;
         int boardHeight = boardData.length;
@@ -49,7 +66,7 @@ public class CoverArray {
                     for(int k = 0; k < tileHeight; k ++){
                         for(int l = 0; l < tileWidth; l ++){
                             if(data[k][l] != ' '){
-                                curRow[tileCount+(i+k)*boardWidth+(l+j)]=1;
+                                curRow[tileCount+boardidx[i+k][j+l]]=1;
                             }
                         }
                     }
