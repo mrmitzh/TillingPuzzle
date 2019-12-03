@@ -9,6 +9,7 @@ public class Tile {
     public char[][] flipData;
     public List<char[][]> spinDataArrays = new ArrayList<>();
     public List<char[][]> flipDataArrays = new ArrayList<>();
+    public List<char[][]> allDataArrays = new ArrayList<>();
 
     int height;
     int width;
@@ -50,6 +51,7 @@ public class Tile {
             for(int j = i+1; j < spinDataArrays.size(); j ++){
                 if(equal(spinDataArrays.get(i), spinDataArrays.get(j))){
                     spinDataArrays.remove(j);
+                    j--;
                 }
             }
         }
@@ -58,9 +60,26 @@ public class Tile {
             for(int j = i+1; j < flipDataArrays.size(); j ++){
                 if(equal(flipDataArrays.get(i), flipDataArrays.get(j))){
                     flipDataArrays.remove(j);
+                    j--;
                 }
             }
         }
+
+        for(int i = 0; i < flipDataArrays.size(); i ++){
+            allDataArrays.add(flipDataArrays.get(i));
+        }
+        for(int i = 0; i < spinDataArrays.size(); i ++){
+            allDataArrays.add(spinDataArrays.get(i));
+        }
+        for(int i = 0; i < allDataArrays.size(); i ++){
+            for(int j = i+1; j < allDataArrays.size(); j ++){
+                if(equal(allDataArrays.get(i), allDataArrays.get(j))){
+                    allDataArrays.remove(j);
+                    j--;
+                }
+            }
+        }
+
     }
 
     public boolean equal(Tile t){

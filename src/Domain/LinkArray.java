@@ -7,12 +7,13 @@ public class LinkArray {
     int[][] coverArray;
     public int tileNum = 0;
     public Node[][] nodes;
+    List<ColumnNode> columnNodes;
     public ColumnNode h;
 
     public LinkArray(CoverArray ca){
         this.coverArray = ca.coverArray;
         this.tileNum = ca.tileNum;
-        List<ColumnNode> columnNodes = new ArrayList<>();
+        columnNodes = new ArrayList<>();
         nodes = new Node[ca.rowNum][ca.columnNum];
 
         h = new ColumnNode();
@@ -29,6 +30,8 @@ public class LinkArray {
                 columnNode.left = columnNodes.get(i-1);
                 columnNodes.get(i-1).right = columnNode;
             }else{
+                columnNodes.get(i-1).right = columnNode;
+                columnNode.left = columnNodes.get(i-1);
                 columnNode.right = h;
                 h.left = columnNode;
             }
