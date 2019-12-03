@@ -1,7 +1,4 @@
-import Domain.ColumnNode;
-import Domain.CoverArray;
-import Domain.LinkArray;
-import Domain.Node;
+import Domain.*;
 import Utils.ReadFile;
 
 import java.util.Arrays;
@@ -13,6 +10,9 @@ public class TilingPuzzle {
     LinkArray linkArray;
     Stack<Node> stack;
     Stack<Node> solution;
+    CoverArray coverArray;
+    Tile board;
+    List<Tile> tiles;
     public static void main(String[] args) {
         if(args.length != 1)
         {
@@ -23,6 +23,9 @@ public class TilingPuzzle {
         CoverArray coverArray = new CoverArray(readFile.tiles, readFile.board);
         coverArray.printArray();
         TilingPuzzle tilingPuzzle = new TilingPuzzle();
+        tilingPuzzle.board = readFile.board;
+        tilingPuzzle.tiles = readFile.tiles;
+        tilingPuzzle.coverArray = coverArray;
         tilingPuzzle.stack = new Stack<>();
         tilingPuzzle.solution = new Stack<>();
         tilingPuzzle.linkArray = new LinkArray(coverArray);
@@ -34,13 +37,36 @@ public class TilingPuzzle {
         // just printout the row ..
         Node[] arr = new Node[solution.size()];
         Stack<Node> copySolution = (Stack<Node>) solution.clone();
+        char[][] res = new char[board.data.length][board.data[0].length];
         for(int i = arr.length - 1 ; i >= 0; i--)
         {
             arr[i] = copySolution.pop();
         }
         for(Node node:arr)
         {
-            System.out.print(node.row);
+            int[] row = coverArray.coverArray[node.row];
+            int index = 0;
+            for(int i = 0; i < tiles.size(); i ++){
+                if(row[i] == 1){
+                    index = i;
+                    break;
+                }
+            }
+            char c= (char)('a' + index);
+            for(int i = tiles.size(); i < row.length; i ++){
+                if(row[i] == 1){
+                    int x = (i-tiles.size()) / res[0].length;
+                    int y = (i-tiles.size()) % res[0].length;
+                    res[x][y] = c;
+                }
+            }
+            //System.out.print(node.row);
+        }
+        for(int i = 0; i < res.length; i ++){
+            for(int j = 0; j < res[0].length; j ++){
+                System.out.print(res[i][j]);
+            }
+            System.out.println();
         }
         System.out.println();
     }
