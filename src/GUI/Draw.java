@@ -19,6 +19,8 @@ public class Draw extends Component {
     private JMenuBar menuBar;
     private JMenu menu;
     private final Color bgColor = Color.WHITE;
+    private JPanel controlPanel;
+    private ReadFile readFile;
 
     public Draw()
     {
@@ -35,7 +37,7 @@ public class Draw extends Component {
                 if(fc.showOpenDialog(Draw.this) == JFileChooser.APPROVE_OPTION)
                 {
                     File file = fc.getSelectedFile();
-                    System.out.println(file.toString());
+                    readFile = new ReadFile(file.getPath());
                 }
             }
         });
@@ -48,7 +50,56 @@ public class Draw extends Component {
         menu.add(menuOpen);
         menu.add(menuExit);
         menuBar.add(menu);
+
+        controlPanel = new JPanel();
+        controlPanel.setBackground(Color.WHITE);
+        controlPanel.setBorder(BorderFactory.createTitledBorder("Control"));
+        controlPanel.setOpaque(true);
+        controlPanel.setVisible(true);
+        controlPanel.setFocusable(true);
+
+        JCheckBox enableSpin = new JCheckBox("Enable Rotation");
+        enableSpin.setBackground(Color.white);
+        enableSpin.setBorder(BorderFactory.createEmptyBorder(5,5,5,5));
+        enableSpin.setSelected(false);
+        enableSpin.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                // TODO:
+            }
+        });
+
+        JCheckBox enableSpinFlip = new JCheckBox("Rotation + Reflection");
+        enableSpinFlip.setBackground(Color.WHITE);
+        enableSpinFlip.setBorder(BorderFactory.createEmptyBorder(5,5,5,5));
+        enableSpinFlip.setSelected(false);
+        enableSpinFlip.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                // TODO:
+            }
+        });
+
+        JCheckBox eliminateDuplicate = new JCheckBox("Eliminate Duplicate");
+        eliminateDuplicate.setBackground(Color.white);
+        eliminateDuplicate.setBorder(BorderFactory.createEmptyBorder(5,5,5,5));
+        eliminateDuplicate.setSelected(false);
+        eliminateDuplicate.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                // TODO:
+            }
+        });
+
+        controlPanel.setLayout(new GridLayout(3,1));
+        controlPanel.add(enableSpin);
+        controlPanel.add(enableSpinFlip);
+        controlPanel.add(eliminateDuplicate);
+
         jFrame.setJMenuBar(menuBar);
+        jFrame.setLayout(new BorderLayout());
+        jFrame.add("West",controlPanel);
+
         jFrame.setVisible(true);
         jFrame.setSize(new Dimension(800,600));
     }
