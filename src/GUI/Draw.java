@@ -80,6 +80,8 @@ public class Draw extends Component {
             }
         });
 
+
+
         JCheckBox eliminateDuplicate = new JCheckBox("Eliminate Duplicate");
         eliminateDuplicate.setBackground(Color.white);
         eliminateDuplicate.setBorder(BorderFactory.createEmptyBorder(5,5,5,5));
@@ -91,14 +93,62 @@ public class Draw extends Component {
             }
         });
 
-        controlPanel.setLayout(new GridLayout(3,1));
-        controlPanel.add(enableSpin);
-        controlPanel.add(enableSpinFlip);
-        controlPanel.add(eliminateDuplicate);
+        JPanel selctionPanel = new JPanel();
+        selctionPanel.setLayout(new GridLayout(3,1));
+        selctionPanel.setBackground(Color.WHITE);
+        selctionPanel.add(enableSpin);
+        selctionPanel.add(enableSpinFlip);
+        selctionPanel.add(eliminateDuplicate);
+        selctionPanel.setVisible(true);
+
+
+        ///
+
+        JPanel buttonPanel = new JPanel();
+
+        JButton getSolutionButton = new JButton("Get All Solution");
+        getSolutionButton.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                // TODO:
+            }
+        });
+
+        JButton showSolution = new JButton("Show Solution");
+        showSolution.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                // TODO:
+            }
+        });
+
+        buttonPanel.setLayout(new GridLayout(2,1));
+        buttonPanel.setVisible(true);
+        buttonPanel.setBackground(Color.WHITE);
+        buttonPanel.add(getSolutionButton);
+        buttonPanel.add(showSolution);
+
+
+        controlPanel.setLayout(new GridLayout(2,1));
+        controlPanel.add(selctionPanel);
+        controlPanel.add(buttonPanel);
+
+        JPanel showTileSolution = new JPanel();
+        showTileSolution.setBorder(BorderFactory.createTitledBorder("Solution"));
+        showTileSolution.setBackground(Color.WHITE);
+        showTileSolution.setVisible(true);
+
+        JPanel showAllTiles = new JPanel();
+        showAllTiles.setBorder(BorderFactory.createTitledBorder("All the tiles"));
+        showAllTiles.setBackground(Color.WHITE);
+        showAllTiles.setVisible(true);
 
         jFrame.setJMenuBar(menuBar);
         jFrame.setLayout(new BorderLayout());
         jFrame.add("West",controlPanel);
+        jFrame.add("Center",showTileSolution);
+        jFrame.add("East", showAllTiles);
+
 
         jFrame.setVisible(true);
         jFrame.setSize(new Dimension(800,600));
@@ -156,7 +206,6 @@ public class Draw extends Component {
     {
         ReadFile readFile = new ReadFile(args[0]);
         Draw draw = new Draw();
-        draw.showTileList(readFile.tiles);
 
     }
 
