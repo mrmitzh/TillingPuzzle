@@ -29,6 +29,8 @@ public class LinkArray {
                 columnNode.left = columnNodes.get(i-1);
                 columnNodes.get(i-1).right = columnNode;
             }else{
+                columnNodes.get(i-1).right = columnNode;
+                columnNode.left = columnNodes.get(i-1);
                 columnNode.right = h;
                 h.left = columnNode;
             }
