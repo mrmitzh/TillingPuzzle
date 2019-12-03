@@ -82,8 +82,7 @@ public class TilingPuzzle {
     }
 
     public void uncover(ColumnNode columnNode){
-        Node colNode =columnNode.up;
-        for(Node rowNode = colNode.up; rowNode != colNode; rowNode = rowNode.up)
+        for(Node rowNode = columnNode.up; rowNode != columnNode; rowNode = columnNode.up)
         {
             for(Node leftNode = rowNode.left; leftNode != rowNode; leftNode = leftNode.left)
             {
@@ -92,8 +91,8 @@ public class TilingPuzzle {
                 leftNode.head.size ++;
             }
         }
-        colNode.right.left = colNode;
-        colNode.left.right = colNode;
+        columnNode.right.left = columnNode;
+        columnNode.left.right = columnNode;
     }
 
     public ColumnNode findStartColumn(LinkArray linkArray){
