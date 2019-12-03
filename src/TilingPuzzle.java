@@ -21,6 +21,7 @@ public class TilingPuzzle {
         }
         ReadFile readFile = new ReadFile(args[0]);
         CoverArray coverArray = new CoverArray(readFile.tiles, readFile.board);
+        coverArray.printArray();
         TilingPuzzle tilingPuzzle = new TilingPuzzle();
         tilingPuzzle.stack = new Stack<>();
         tilingPuzzle.solution = new Stack<>();
@@ -81,8 +82,8 @@ public class TilingPuzzle {
         }
     }
 
-    public void uncover(ColumnNode columnNode){
-        for(Node rowNode = columnNode.up; rowNode != columnNode; rowNode = columnNode.up)
+    public void uncover(ColumnNode colNode){
+        for(Node rowNode = colNode.up; rowNode != colNode; rowNode = rowNode.up)
         {
             for(Node leftNode = rowNode.left; leftNode != rowNode; leftNode = leftNode.left)
             {

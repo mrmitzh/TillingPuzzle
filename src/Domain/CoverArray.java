@@ -16,11 +16,14 @@ public class CoverArray {
         for(int i = 0; i < tiles.size(); i ++){
             Tile t = tiles.get(i);
 
-            for(int j = 0; j < t.spinDataArrays.size(); j ++){
-                check(t.spinDataArrays.get(j), board.data, arrays, i, tiles.size());
-            }
-            for(int j = 0; j < t.flipDataArrays.size(); j ++){
-                check(t.flipDataArrays.get(j), board.data, arrays, i, tiles.size());
+//            for(int j = 0; j < t.spinDataArrays.size(); j ++){
+//                check(t.spinDataArrays.get(j), board.data, arrays, i, tiles.size());
+//            }
+//            for(int j = 0; j < t.flipDataArrays.size(); j ++){
+//                check(t.flipDataArrays.get(j), board.data, arrays, i, tiles.size());
+//            }
+            for(int j = 0; j < t.allDataArrays.size(); j ++){
+                check(t.allDataArrays.get(j), board.data, arrays, i, tiles.size());
             }
         }
         coverArray = new int[arrays.size()][arrays.get(0).length];
@@ -61,9 +64,18 @@ public class CoverArray {
         int width = data[0].length;
         for(int i = 0; i < height; i ++){
             for(int j = 0; j < width; j ++){
-                if(boardData[x+i][y+j] != data[i][j])return false;
+                if(data[i][j] != ' ' && boardData[x+i][y+j] != data[i][j])return false;
             }
         }
         return true;
+    }
+
+    public void printArray(){
+        for(int i = 0; i < rowNum; i ++){
+            for(int j = 0; j < columnNum; j ++){
+                System.out.print(coverArray[i][j]);
+            }
+            System.out.println();
+        }
     }
 }
