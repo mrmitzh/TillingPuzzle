@@ -7,7 +7,7 @@ public class CoverArray {
     int columnNum = 0;
     int rowNum = 0;
     public int[][] coverArray;
-    private int[][] boardidx;
+    public int[][] boardidx;
     int tileNum = 0;
 
     public CoverArray(List<Tile> tiles, Tile board){
