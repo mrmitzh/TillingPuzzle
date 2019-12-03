@@ -92,8 +92,8 @@ public class TilingPuzzle {
                 leftNode.head.size ++;
             }
         }
-        columnNode.right.left = columnNode;
-        columnNode.left.right = columnNode;
+        colNode.right.left = colNode;
+        colNode.left.right = colNode;
     }
 
     public ColumnNode findStartColumn(LinkArray linkArray){
