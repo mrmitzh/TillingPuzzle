@@ -22,7 +22,7 @@ public class TilingPuzzle {
         }
         ReadFile readFile = new ReadFile(args[0]);
         CoverArray coverArray = new CoverArray(readFile.tiles, readFile.board);
-        coverArray.printArray();
+//        coverArray.printArray();
         TilingPuzzle tilingPuzzle = new TilingPuzzle();
         tilingPuzzle.board = readFile.board;
         tilingPuzzle.tiles = readFile.tiles;
@@ -83,21 +83,17 @@ public class TilingPuzzle {
     {
         TransformMatrix transformMatrix = new TransformMatrix(solution);
         List<char[][]> allData = transformMatrix.getAllDataArrays();
-        Boolean shouldPut = true;
         for(int i = 0; i < result.size(); i++)
         {
             for(int j = 0; j < allData.size();j++)
             {
                 if(TransformMatrix.equal(result.get(i),allData.get(j)))
                 {
-                    shouldPut = false;
+                    return;
                 }
             }
         }
-        if(shouldPut)
-        {
-            result.add(solution);
-        }
+        result.add(solution);
     }
 
     public void printMatrix(char[][] res)
@@ -118,7 +114,7 @@ public class TilingPuzzle {
         if(linkArray.h.right == linkArray.h || linkArray.h.left.col < linkArray.tileNum){
             //Finished
             char[][] generatedSolution = generateSolution(solution);
-            printMatrix(generatedSolution);
+//            printMatrix(generatedSolution);
             putSolution(generatedSolution);
             return;
         }
