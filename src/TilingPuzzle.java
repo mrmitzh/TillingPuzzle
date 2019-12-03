@@ -87,12 +87,25 @@ public class TilingPuzzle {
         }
     }
 
+    public void printMatrix(char[][] res)
+    {
+        for(int i = 0; i < res.length;i++)
+        {
+            for(int j = 0; j < res[0].length;j++)
+            {
+                System.out.print(res[i][j]);
+            }
+            System.out.println();
+        }
+        System.out.println();
+    }
 
     public void solve(LinkArray linkArray){
         if(linkArray.h.right == linkArray.h || linkArray.h.left.col < linkArray.tileNum){
             //Finished
-//            printSolution(solution);
-            putSolution(generateSolution(solution));
+            char[][] generatedSolution = generateSolution(solution);
+            printMatrix(generatedSolution);
+            putSolution(generatedSolution);
             return;
         }
         ColumnNode nextColumn = findStartColumn(linkArray);
