@@ -1,9 +1,7 @@
 import Domain.*;
 import Utils.ReadFile;
 
-import java.util.Arrays;
-import java.util.List;
-import java.util.Stack;
+import java.util.*;
 
 public class TilingPuzzle {
 
@@ -13,6 +11,8 @@ public class TilingPuzzle {
     CoverArray coverArray;
     Tile board;
     List<Tile> tiles;
+    ArrayList<char[][]> result;
+
     public static void main(String[] args) {
         if(args.length != 1)
         {
@@ -29,12 +29,14 @@ public class TilingPuzzle {
         tilingPuzzle.stack = new Stack<>();
         tilingPuzzle.solution = new Stack<>();
         tilingPuzzle.linkArray = new LinkArray(coverArray);
+        tilingPuzzle.result = new ArrayList<>();
         tilingPuzzle.solve(tilingPuzzle.linkArray);
+
+        System.out.println(tilingPuzzle.result.size());
     }
 
-    public void printSolution(Stack<Node> solution)
+    public char[][] generateSolution(Stack<Node> solution)
     {
-        // just printout the row ..
         Node[] arr = new Node[solution.size()];
         Stack<Node> copySolution = (Stack<Node>) solution.clone();
         char[][] res = new char[board.data.length][board.data[0].length];
@@ -60,21 +62,37 @@ public class TilingPuzzle {
                     res[x][y] = c;
                 }
             }
-            //System.out.print(node.row);
         }
-        for(int i = 0; i < res.length; i ++){
-            for(int j = 0; j < res[0].length; j ++){
-                System.out.print(res[i][j]);
-            }
-            System.out.println();
-        }
-        System.out.println();
+        return res;
     }
+
+    public void putSolution(char[][] solution)
+    {
+        TransformMatrix transformMatrix = new TransformMatrix(solution);
+        List<char[][]> allData = transformMatrix.getAllDataArrays();
+        Boolean shouldPut = true;
+        for(int i = 0; i < result.size(); i++)
+        {
+            for(int j = 0; j < allData.size();j++)
+            {
+                if(TransformMatrix.equal(result.get(i),allData.get(j)))
+                {
+                    shouldPut = false;
+                }
+            }
+        }
+        if(shouldPut)
+        {
+            result.add(solution);
+        }
+    }
+
 
     public void solve(LinkArray linkArray){
         if(linkArray.h.right == linkArray.h || linkArray.h.left.col < linkArray.tileNum){
             //Finished
-            printSolution(solution);
+//            printSolution(solution);
+            putSolution(generateSolution(solution));
             return;
         }
         ColumnNode nextColumn = findStartColumn(linkArray);
