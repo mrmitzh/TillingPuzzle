@@ -9,18 +9,20 @@ import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.io.File;
+import java.util.ArrayList;
 import java.util.List;
 
 public class Draw extends Component {
     private JFrame jFrame;
     private JPanel panel1;
     private JButton select;
-    private JPanel pTileList;
     private JMenuBar menuBar;
     private JMenu menu;
     private final Color bgColor = Color.WHITE;
     private JPanel controlPanel;
     private ReadFile readFile;
+    private JPanel showAllTiles;
+    private JPanel showTileSolution;
 
     public Draw()
     {
@@ -133,15 +135,19 @@ public class Draw extends Component {
         controlPanel.add(selctionPanel);
         controlPanel.add(buttonPanel);
 
-        JPanel showTileSolution = new JPanel();
+        // Middle Layout
+        showTileSolution = new JPanel();
         showTileSolution.setBorder(BorderFactory.createTitledBorder("Solution"));
         showTileSolution.setBackground(Color.WHITE);
         showTileSolution.setVisible(true);
 
-        JPanel showAllTiles = new JPanel();
+
+        // East Layout
+        showAllTiles = new JPanel();
         showAllTiles.setBorder(BorderFactory.createTitledBorder("All the tiles"));
         showAllTiles.setBackground(Color.WHITE);
         showAllTiles.setVisible(true);
+
 
         jFrame.setJMenuBar(menuBar);
         jFrame.setLayout(new BorderLayout());
@@ -154,59 +160,67 @@ public class Draw extends Component {
         jFrame.setSize(new Dimension(800,600));
     }
 
-    private void tileListPanel()
-    {
-        pTileList = new JPanel();
-        pTileList.setBackground(bgColor);
-        pTileList.setLayout(null);
-        pTileList.setOpaque(true);
-        pTileList.setVisible(true);
-        pTileList.setFocusable(true);
-        pTileList.setBorder(BorderFactory.createTitledBorder("Tiles"));
-    }
 
     private void showTileList(List<Tile> tiles)
     {
-        tileListPanel();
-        int maxHeight = 0;
-        int maxWidth = 0;
+        ArrayList<JPanel> allPanelList = new ArrayList<>();
+        int counter = 0;
         for(Tile tile:tiles)
         {
-            maxHeight = Math.max(maxHeight,tile.data.length);
-            maxWidth = Math.max(maxWidth,tile.data[0].length);
-        }
-        for(Tile tile:tiles)
-        {
-            JPanel subPanel = new JPanel();
+            counter++;
+            JPanel currentPanel = new JPanel();
+            currentPanel.setLayout(new GridLayout(tile.data.length,tile.data[0].length));
             for(int i = 0; i < tile.data.length;i++)
             {
                 for(int j = 0; j < tile.data[0].length;j++)
                 {
                     if(tile.data[i][j] != ' ')
+                        System.out.print(tile.data[i][j]);
+                    else
+                        System.out.print("@");
+                }
+                System.out.println();
+            }
+            System.out.println();
+            System.out.println();
+            for(int i = 0; i < tile.data.length;i++)
+            {
+                for(int j = 0; j < tile.data[i].length;j++)
+                {
+                    JPanel temp = new JPanel();
+                    temp.setBackground(Color.WHITE);
+                    if(tile.data[i][j] != ' ')
                     {
-                        JPanel block = new JPanel();
-                        block.setBorder(new LineBorder(Color.black));
-                        block.setSize(30,40);
-                        JLabel l = new JLabel(Character.toString(tile.data[i][j]));
-                        l.setVisible(true);
-                        block.add(l);
-                        block.setVisible(true);
-                        subPanel.add(block);
+                        // has data
+                        JLabel label = new JLabel(Character.toString(tile.data[i][j]));
+                        label.setVisible(true);
+                        temp.add(label);
+                        temp.setVisible(true);
+                        currentPanel.add(temp);
+                    }else
+                    {
+                        temp.setVisible(false);
+                        currentPanel.add(temp);
                     }
                 }
             }
-            subPanel.setVisible(true);
-            pTileList.add(subPanel);
+            currentPanel.setVisible(true);
+            currentPanel.setBackground(Color.WHITE);
+            currentPanel.setBorder(BorderFactory.createTitledBorder("Tile " + Integer.toString(counter)));
+            allPanelList.add(currentPanel);
         }
-        pTileList.setVisible(true);
-        jFrame.add(pTileList);
+        showAllTiles.setLayout(new GridLayout((int) Math.ceil(1.0*tiles.size()/3),3));
+        for(JPanel panel: allPanelList)
+        {
+            showAllTiles.add(panel);
+        }
     }
 
     public static void main(String[] args)
     {
         ReadFile readFile = new ReadFile(args[0]);
         Draw draw = new Draw();
-
+        draw.showTileList(readFile.tiles);
     }
 
 }
