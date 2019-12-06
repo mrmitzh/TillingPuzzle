@@ -32,7 +32,7 @@ public class TilingPuzzle {
         tilingPuzzle.solution = new Stack<>();
         tilingPuzzle.linkArray = new LinkArray(coverArray);
         tilingPuzzle.result = new ArrayList<>();
-        tilingPuzzle.solve(tilingPuzzle.linkArray);
+        tilingPuzzle.solve(tilingPuzzle.linkArray,true);
 
         System.out.println(tilingPuzzle.result.size());
     }
@@ -80,17 +80,20 @@ public class TilingPuzzle {
         return res;
     }
 
-    public void putSolution(char[][] solution)
+    public void putSolution(char[][] solution,boolean eliminateDuplicate)
     {
-        TransformMatrix transformMatrix = new TransformMatrix(solution);
-        List<char[][]> allData = transformMatrix.getAllDataArrays();
-        for(int i = 0; i < result.size(); i++)
+        if(eliminateDuplicate)
         {
-            for(int j = 0; j < allData.size();j++)
+            TransformMatrix transformMatrix = new TransformMatrix(solution);
+            List<char[][]> allData = transformMatrix.getAllDataArrays();
+            for(int i = 0; i < result.size(); i++)
             {
-                if(TransformMatrix.equal(result.get(i),allData.get(j)))
+                for(int j = 0; j < allData.size();j++)
                 {
-                    return;
+                    if(TransformMatrix.equal(result.get(i),allData.get(j)))
+                    {
+                        return;
+                    }
                 }
             }
         }
@@ -110,13 +113,13 @@ public class TilingPuzzle {
         System.out.println();
     }
 
-    public void solve(LinkArray linkArray){
+    public void solve(LinkArray linkArray,boolean eliminateDuplicate){
         level ++;
         if(linkArray.h.right == linkArray.h || linkArray.h.left.col < linkArray.tileNum){
             //Finished
             char[][] generatedSolution = generateSolution(solution);
 //            printMatrix(generatedSolution);
-            putSolution(generatedSolution);
+            putSolution(generatedSolution,eliminateDuplicate);
             return;
         }
         ColumnNode nextColumn = findStartColumn(linkArray);
@@ -126,7 +129,7 @@ public class TilingPuzzle {
             for(Node rightNode = nextNode.right; rightNode != nextNode; rightNode = rightNode.right){
                 cover(rightNode.head);
             }
-            solve(linkArray);
+            solve(linkArray,eliminateDuplicate);
             nextNode = solution.pop();
             nextColumn = nextNode.head;
             for(Node leftNode = nextNode.left; leftNode != nextNode; leftNode = leftNode.left){

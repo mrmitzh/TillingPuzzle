@@ -43,6 +43,7 @@ public class Draw extends Component {
     int solutionIndex = 0;
     boolean enableSpin = true;
     boolean enableSpinFlip = true;
+    boolean enableEliminateDuplicate = false;
 
     public Draw(List<Tile> tiles, Tile board)
     {
@@ -150,7 +151,7 @@ public class Draw extends Component {
         eliminateDuplicate.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
-                // TODO:
+                enableEliminateDuplicate = eliminateDuplicate.isSelected();
             }
         });
 
@@ -181,7 +182,7 @@ public class Draw extends Component {
                 tilingPuzzle.solution = new Stack<>();
                 tilingPuzzle.linkArray = new LinkArray(coverArray);
                 tilingPuzzle.result = new ArrayList<>();
-                tilingPuzzle.solve(tilingPuzzle.linkArray);
+                tilingPuzzle.solve(tilingPuzzle.linkArray,enableEliminateDuplicate);
                 res = tilingPuzzle.result;
                 if(res.size() > 1)getNextSolution.setEnabled(true);
                 if(res.size() == 0)JOptionPane.showMessageDialog(jFrame, "No solution");
