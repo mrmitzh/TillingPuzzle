@@ -16,6 +16,7 @@ import java.awt.image.BufferedImage;
 import java.io.File;
 import java.util.*;
 import java.util.List;
+import java.util.Timer;
 
 public class Draw extends Component {
     private JFrame jFrame;
@@ -182,13 +183,16 @@ public class Draw extends Component {
                 tilingPuzzle.solution = new Stack<>();
                 tilingPuzzle.linkArray = new LinkArray(coverArray);
                 tilingPuzzle.result = new ArrayList<>();
+                long start = System.nanoTime();
                 tilingPuzzle.solve(tilingPuzzle.linkArray,enableEliminateDuplicate);
+                long end = System.nanoTime();
                 res = tilingPuzzle.result;
                 if(res.size() > 1)getNextSolution.setEnabled(true);
                 if(res.size() == 0)JOptionPane.showMessageDialog(jFrame, "No solution");
                 else
                 {
-                    JOptionPane.showMessageDialog(jFrame, "Find total solution size: " + String.valueOf(res.size()));
+                    JOptionPane.showMessageDialog(jFrame, "Find total solution size: " + String.valueOf(res.size()) +
+                            " With time: " + String.valueOf((double)(end-start)/1000000.0)+" ms");
                     showBoard(solutionIndex);
                 }
                 jFrame.revalidate();
