@@ -1,23 +1,24 @@
-import Domain.*;
+package Domain;
+
 import Utils.ReadFile;
 
 import java.util.*;
 
 public class TilingPuzzle {
 
-    LinkArray linkArray;
-    Stack<Node> stack;
-    Stack<Node> solution;
-    CoverArray coverArray;
-    Tile board;
-    List<Tile> tiles;
-    ArrayList<char[][]> result;
+    public LinkArray linkArray;
+    public Stack<Node> stack;
+    public Stack<Node> solution;
+    public CoverArray coverArray;
+    public Tile board;
+    public List<Tile> tiles;
+    public ArrayList<char[][]> result;
     int level = 0;
 
     public static void main(String[] args) {
         if(args.length != 1)
         {
-            System.out.println("Usage: TilingPuzzle FileName");
+            System.out.println("Usage: Domain.TilingPuzzle FileName");
             System.exit(0);
         }
         ReadFile readFile = new ReadFile(args[0]);

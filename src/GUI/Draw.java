@@ -1,17 +1,20 @@
 package GUI;
 
+import Domain.CoverArray;
+import Domain.LinkArray;
 import Domain.Tile;
+import Domain.TilingPuzzle;
 import Utils.ReadFile;
 
 import javax.swing.*;
+import javax.swing.border.Border;
 import javax.swing.border.LineBorder;
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.awt.image.BufferedImage;
 import java.io.File;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collections;
+import java.util.*;
 import java.util.List;
 
 public class Draw extends Component {
@@ -23,14 +26,26 @@ public class Draw extends Component {
     private final Color bgColor = Color.WHITE;
     private JPanel controlPanel;
     private ReadFile readFile;
-    private JPanel showAllTiles;
-    private JPanel showTileSolution;
+    private JPanel allTiles;
+    private JPanel tileSolution;
     private ArrayList<Color> colorMapping;
     private List<Tile> tiles;
+    private Tile board;
+    private JButton getNextSolution;
+    private JButton getPrevSolution;
+    private List<char[][]> res;
+    private BufferedImage image;
+    private Graphics boardGraph;
+    private int blockHeight = 20;
+    private int blockWidth = 20;
+    private int boardDisplayHeight = 500;
+    private int boardDisplayWidth = 500;
+    int solutionIndex = 0;
 
-    public Draw(List<Tile> tiles)
+    public Draw(List<Tile> tiles, Tile board)
     {
         this.tiles = tiles;
+        this.board = board;
         colorMapping = new ArrayList<>();
         colorMapping.addAll(Arrays.asList(Color.red, Color.green, Color.blue,
                 Color.yellow, Color.cyan, new Color(46, 139, 87),
@@ -150,6 +165,20 @@ public class Draw extends Component {
             @Override
             public void actionPerformed(ActionEvent e) {
                 // TODO:
+                TilingPuzzle tilingPuzzle = new TilingPuzzle();
+                CoverArray coverArray = new CoverArray(tiles, board);
+                tilingPuzzle.board = board;
+                tilingPuzzle.tiles = tiles;
+                tilingPuzzle.coverArray = coverArray;
+                tilingPuzzle.stack = new Stack<>();
+                tilingPuzzle.solution = new Stack<>();
+                tilingPuzzle.linkArray = new LinkArray(coverArray);
+                tilingPuzzle.result = new ArrayList<>();
+                tilingPuzzle.solve(tilingPuzzle.linkArray);
+                res = tilingPuzzle.result;
+                if(res.size() > 1)getNextSolution.setEnabled(true);
+                showBoard(solutionIndex ++);
+                jFrame.revalidate();
             }
         });
 
@@ -158,14 +187,41 @@ public class Draw extends Component {
             @Override
             public void actionPerformed(ActionEvent e) {
                 // TODO:
+
             }
         });
 
+        getNextSolution = new JButton("Next");
+        getNextSolution.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                showBoard(++solutionIndex);
+                getPrevSolution.setEnabled(true);
+                if(solutionIndex == res.size()){
+                    getNextSolution.setEnabled(false);
+                }
+            }
+        });
+
+        getPrevSolution = new JButton("Prev");
+        getPrevSolution.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                showBoard(--solutionIndex);
+                if(solutionIndex == 0){
+                    getPrevSolution.setEnabled(false);
+                }
+            }
+        });
+
+        getNextSolution.setEnabled(false);
+        getPrevSolution.setEnabled(false);
         buttonPanel.setLayout(new GridLayout(2,1));
         buttonPanel.setVisible(true);
         buttonPanel.setBackground(Color.WHITE);
         buttonPanel.add(getSolutionButton);
-        buttonPanel.add(showSolution);
+        buttonPanel.add(getNextSolution);
+        buttonPanel.add(getPrevSolution);
 
 
         controlPanel.setLayout(new GridLayout(2,1));
@@ -173,24 +229,24 @@ public class Draw extends Component {
         controlPanel.add(buttonPanel);
 
         // Middle Layout
-        showTileSolution = new JPanel();
-        showTileSolution.setBorder(BorderFactory.createTitledBorder("Solution"));
-        showTileSolution.setBackground(Color.WHITE);
-        showTileSolution.setVisible(true);
+        tileSolution = new JPanel();
+        tileSolution.setBorder(BorderFactory.createTitledBorder("Solution"));
+        tileSolution.setBackground(Color.WHITE);
+        tileSolution.setVisible(true);
 
 
         // East Layout
-        showAllTiles = new JPanel();
-        showAllTiles.setBorder(BorderFactory.createTitledBorder("All the tiles"));
-        showAllTiles.setBackground(Color.WHITE);
-        showAllTiles.setVisible(true);
+        allTiles = new JPanel();
+        allTiles.setBorder(BorderFactory.createTitledBorder("All the tiles"));
+        allTiles.setBackground(Color.WHITE);
+        allTiles.setVisible(true);
 
 
         jFrame.setJMenuBar(menuBar);
         jFrame.setLayout(new BorderLayout());
         jFrame.add("West",controlPanel);
-        jFrame.add("Center",showTileSolution);
-        jFrame.add("East", showAllTiles);
+        jFrame.add("Center",tileSolution);
+        jFrame.add("East", allTiles);
 
 
         jFrame.setVisible(true);
@@ -207,7 +263,7 @@ public class Draw extends Component {
         {
             counter++;
             JPanel currentPanel = new JPanel();
-            currentPanel.setLayout(new GridLayout(tile.data.length,tile.data[0].length));
+            currentPanel.setLayout(new GridLayout(tile.data.length,tile.data[0].length,2,2));
             for(int i = 0; i < tile.data.length;i++)
             {
                 for(int j = 0; j < tile.data[i].length;j++)
@@ -234,18 +290,67 @@ public class Draw extends Component {
             currentPanel.setBorder(BorderFactory.createTitledBorder("Tile " + Integer.toString(counter)));
             allPanelList.add(currentPanel);
         }
-        showAllTiles.setLayout(new GridLayout((int) Math.ceil(1.0*tiles.size()/3),3));
+        allTiles.setLayout(new GridLayout((int) Math.ceil(1.0*tiles.size()/3),3));
         for(JPanel panel: allPanelList)
         {
-            showAllTiles.add(panel);
+            allTiles.add(panel);
         }
+    }
+
+    public void showBoard(int index){
+        tileSolution.removeAll();
+        int width = tileSolution.getWidth();
+        int height = tileSolution.getHeight();
+        int blockWidth = width / board.data[0].length;
+        int blockHeight = height / board.data.length;
+        int length = blockWidth > blockHeight ? blockHeight : blockWidth;
+        int widthSize = width / length;
+        int heightSize = height / length;
+        int vOffset = (heightSize - board.data.length) / 2;
+        int hOffset =  (widthSize - board.data[0].length) / 2;
+        tileSolution.setLayout(new GridLayout(heightSize, widthSize, 1, 1));
+        for(int i = 0; i < heightSize; i ++){
+            for(int j = 0; j < widthSize; j ++){
+                JPanel temp = new JPanel();
+                if(i >= vOffset && i < vOffset + board.data.length && j >= hOffset && j < hOffset + board.data[0].length){
+                    if(board.data[i-vOffset][j-hOffset] != ' '){
+                        if(index != -1){
+                            temp.setBackground(colorMapping.get(res.get(index)[i-vOffset][j-hOffset]-'a'));
+                        }else temp.setBackground(Color.gray);
+                        temp.setVisible(true);
+                    }else{
+                        temp.setVisible(false);
+                    }
+                }else{
+                    temp.setVisible(false);
+                }
+                tileSolution.add(temp);
+            }
+        }
+        tileSolution.revalidate();
+    }
+
+    public void showSolution(int index){
+        tileSolution.removeAll();
+
+    }
+
+    public void setupBoard(){
+        int height = board.data.length;
+        int width = board.data[0].length;
+//        JPanel boardPanel = new JPanel();
+//        boardPanel.setSize(new Dimension(40 * width, 40 * height));
+//        boardPanel.setBackground(Color.BLACK);
+//        boardPanel.setVisible(true);
+//        tileSolution.add("Center", boardPanel);
     }
 
     public static void main(String[] args)
     {
         ReadFile readFile = new ReadFile(args[0]);
-        Draw draw = new Draw(readFile.tiles);
+        Draw draw = new Draw(readFile.tiles, readFile.board);
         draw.showTileList();
+        draw.showBoard(-1);
     }
 
 }
