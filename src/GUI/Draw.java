@@ -96,9 +96,11 @@ public class Draw extends Component {
                 {
                     File file = fc.getSelectedFile();
                     readFile = new ReadFile(file.getPath());
-                    Draw draw = new Draw(readFile.tiles, readFile.board);
-                    draw.showTileList();
-                    draw.showBoard(-1);
+                    Draw.this.tiles = readFile.tiles;
+                    Draw.this.board = readFile.board;
+                    //Draw draw = new Draw(readFile.tiles, readFile.board);
+                    Draw.this.showTileList();
+                    Draw.this.showBoard(-1);
                 }
             }
         });
@@ -276,6 +278,7 @@ public class Draw extends Component {
 
     private void showTileList()
     {
+        allTiles.removeAll();
         int tileListHeight = boardDisplayHeight;
         int tileListWidth = 400;
         int[][] tileMatrix;
@@ -349,6 +352,8 @@ public class Draw extends Component {
                 allTiles.add(cur);
             }
         }
+        allTiles.revalidate();
+        allTiles.repaint();
 //        int counter = 0;
 //        for(Tile tile:tiles)
 //        {
