@@ -186,17 +186,12 @@ public class Draw extends Component {
                 res = tilingPuzzle.result;
                 if(res.size() > 1)getNextSolution.setEnabled(true);
                 if(res.size() == 0)JOptionPane.showMessageDialog(jFrame, "No solution");
-                else showBoard(solutionIndex);
+                else
+                {
+                    JOptionPane.showMessageDialog(jFrame, "Find total solution size: " + String.valueOf(res.size()));
+                    showBoard(solutionIndex);
+                }
                 jFrame.revalidate();
-            }
-        });
-
-        JButton showSolution = new JButton("Show Solution");
-        showSolution.addActionListener(new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent e) {
-                // TODO:
-
             }
         });
 
