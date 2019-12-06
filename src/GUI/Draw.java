@@ -96,6 +96,7 @@ public class Draw extends Component {
                 {
                     File file = fc.getSelectedFile();
                     readFile = new ReadFile(file.getPath());
+                    Draw.this.clear();
                     Draw.this.tiles = readFile.tiles;
                     Draw.this.board = readFile.board;
                     //Draw draw = new Draw(readFile.tiles, readFile.board);
@@ -177,9 +178,9 @@ public class Draw extends Component {
             public void actionPerformed(ActionEvent e) {
                 // TODO:
                 TilingPuzzle tilingPuzzle = new TilingPuzzle();
-                CoverArray coverArray = new CoverArray(tiles, board, enableSpin, enableSpinFlip);
-                tilingPuzzle.board = board;
-                tilingPuzzle.tiles = tiles;
+                CoverArray coverArray = new CoverArray(Draw.this.tiles, Draw.this.board, enableSpin, enableSpinFlip);
+                tilingPuzzle.board = Draw.this.board;
+                tilingPuzzle.tiles = Draw.this.tiles;
                 tilingPuzzle.coverArray = coverArray;
                 tilingPuzzle.stack = new Stack<>();
                 tilingPuzzle.solution = new Stack<>();
@@ -195,6 +196,7 @@ public class Draw extends Component {
                 {
                     JOptionPane.showMessageDialog(jFrame, "Find total solution size: " + String.valueOf(res.size()) +
                             " With time: " + String.valueOf((double)(end-start)/1000000.0)+" ms");
+                    solutionIndex = 0;
                     showBoard(solutionIndex);
                 }
                 jFrame.revalidate();
@@ -274,7 +276,9 @@ public class Draw extends Component {
         jFrame.pack();
     }
 
-
+    public void clear(){
+        solutionIndex = 0;
+    }
 
     private void showTileList()
     {
