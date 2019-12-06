@@ -276,44 +276,116 @@ public class Draw extends Component {
 
     private void showTileList()
     {
-        ArrayList<JPanel> allPanelList = new ArrayList<>();
-        int counter = 0;
-        for(Tile tile:tiles)
-        {
-            counter++;
-            JPanel currentPanel = new JPanel();
-            currentPanel.setLayout(new GridLayout(tile.data.length,tile.data[0].length,2,2));
-            for(int i = 0; i < tile.data.length;i++)
-            {
-                for(int j = 0; j < tile.data[i].length;j++)
-                {
-                    JPanel temp = new JPanel();
-                    temp.setBackground(colorMapping.get(counter-1));
-                    if(tile.data[i][j] != ' ')
-                    {
-                        // has data
-                        JLabel label = new JLabel(Character.toString(tile.data[i][j]));
-                        label.setVisible(true);
-                        temp.add(label);
-                        temp.setVisible(true);
-                        currentPanel.add(temp);
-                    }else
-                    {
-                        temp.setVisible(false);
-                        currentPanel.add(temp);
+        int tileListHeight = boardDisplayHeight;
+        int tileListWidth = 400;
+        int[][] tileMatrix;
+        // tile with longest width
+        int horizonUpBound = 12;
+        for(Tile tile: tiles){
+            if(tile.data[0].length > horizonUpBound){
+                horizonUpBound = tile.data[0].length;
+            }
+        }
+        int verticalUpBound = 1;
+        int horizonIndex = 1;
+        int curRowMaxHeight = 0;
+        for(Tile tile:tiles){
+            // in the same row
+            if(horizonIndex + tile.data[0].length < horizonUpBound + 2){
+                horizonIndex = horizonIndex + tile.data[0].length + 1;
+                if(tile.data.length > curRowMaxHeight)curRowMaxHeight = tile.data.length;
+            }else{
+                verticalUpBound = verticalUpBound + curRowMaxHeight + 1;
+                horizonIndex = 1;
+                curRowMaxHeight = 0;
+                horizonIndex = horizonIndex + tile.data[0].length + 1;
+                if(tile.data.length > curRowMaxHeight)curRowMaxHeight = tile.data.length;
+            }
+        }
+        if(curRowMaxHeight > 0)verticalUpBound = verticalUpBound + curRowMaxHeight + 1;
+        int blockWidth = tileListWidth / (horizonUpBound+2);
+        int blockHeight = tileListHeight / verticalUpBound;
+        int length = blockHeight > blockWidth ? blockWidth:blockHeight;
+        if(length > 30)length = 30;
+        int horizonSize = tileListWidth / length;
+        int verticalSize = tileListHeight / length;
+        tileMatrix = new int[verticalSize][horizonSize];
+        for(int[] row: tileMatrix){
+            //fill with -1
+            Arrays.fill(row, -1);
+        }
+        horizonIndex = 1;
+        int verticalIndex = 1;
+        for(int index = 0; index < tiles.size(); index ++){
+            char[][] data = tiles.get(index).data;
+            if(horizonIndex + data[0].length < horizonSize){
+                for(int i = 0; i < data.length; i ++){
+                    for(int j = 0; j < data[0].length; j ++){
+                        if(data[i][j] != ' ')tileMatrix[verticalIndex+i][horizonIndex+j] = index;
                     }
                 }
+                horizonIndex = horizonIndex + data[0].length + 1;
+                if(data.length > curRowMaxHeight)curRowMaxHeight = data.length;
+            }else{
+                verticalIndex = verticalIndex + curRowMaxHeight + 1;
+                horizonIndex = 1;
+                curRowMaxHeight = 0;
+                index --;
             }
-            currentPanel.setVisible(true);
-            currentPanel.setBackground(Color.WHITE);
-            currentPanel.setBorder(BorderFactory.createTitledBorder("Tile " + Integer.toString(counter)));
-            allPanelList.add(currentPanel);
         }
-        allTiles.setLayout(new GridLayout((int) Math.ceil(1.0*tiles.size()/3),3));
-        for(JPanel panel: allPanelList)
-        {
-            allTiles.add(panel);
+
+        ArrayList<JPanel> allPanelList = new ArrayList<>();
+        allTiles.setLayout(new GridLayout(tileMatrix.length, tileMatrix[0].length,1,1));
+        allTiles.setPreferredSize(new Dimension(tileListWidth, tileListHeight));
+        for(int i = 0; i < tileMatrix.length; i ++){
+            for(int j = 0; j < tileMatrix[0].length; j ++){
+                JPanel cur = new JPanel();
+                if(tileMatrix[i][j] >= 0){
+                    cur.setBackground(colorMapping.get(tileMatrix[i][j]));
+                    cur.setVisible(true);
+                }else{
+                    cur.setVisible(false);
+                }
+                allTiles.add(cur);
+            }
         }
+//        int counter = 0;
+//        for(Tile tile:tiles)
+//        {
+//            counter++;
+//            JPanel currentPanel = new JPanel();
+//            currentPanel.setLayout(new GridLayout(tile.data.length,tile.data[0].length,2,2));
+//            for(int i = 0; i < tile.data.length;i++)
+//            {
+//                for(int j = 0; j < tile.data[i].length;j++)
+//                {
+//                    JPanel temp = new JPanel();
+//                    temp.setBackground(colorMapping.get(counter-1));
+//                    if(tile.data[i][j] != ' ')
+//                    {
+//                        // has data
+//                        JLabel label = new JLabel(Character.toString(tile.data[i][j]));
+//                        label.setVisible(true);
+//                        temp.add(label);
+//                        temp.setVisible(true);
+//                        currentPanel.add(temp);
+//                    }else
+//                    {
+//                        temp.setVisible(false);
+//                        currentPanel.add(temp);
+//                    }
+//                }
+//            }
+//            currentPanel.setVisible(true);
+//            currentPanel.setBackground(Color.WHITE);
+//            currentPanel.setBorder(BorderFactory.createTitledBorder("Tile " + Integer.toString(counter)));
+//            allPanelList.add(currentPanel);
+//        }
+//        allTiles.setLayout(new GridLayout((int) Math.ceil(1.0*tiles.size()/3),3));
+//        for(JPanel panel: allPanelList)
+//        {
+//            allTiles.add(panel);
+//        }
     }
 
     public void showBoard(int index){
@@ -323,7 +395,7 @@ public class Draw extends Component {
         int blockWidth = width / board.data[0].length;
         int blockHeight = height / board.data.length;
         int length = blockWidth > blockHeight ? blockHeight : blockWidth;
-        if(length > 25)length = 40;
+        if(length > 45)length = 45;
         int widthSize = width / length;
         int heightSize = height / length;
         int vOffset = (heightSize - board.data.length) / 2;
