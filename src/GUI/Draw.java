@@ -38,9 +38,11 @@ public class Draw extends Component {
     private Graphics boardGraph;
     private int blockHeight = 20;
     private int blockWidth = 20;
-    private int boardDisplayHeight = 500;
-    private int boardDisplayWidth = 500;
+    private int boardDisplayHeight = 600;
+    private int boardDisplayWidth = 600;
     int solutionIndex = 0;
+    boolean enableSpin = true;
+    boolean enableSpinFlip = true;
 
     public Draw(List<Tile> tiles, Tile board)
     {
@@ -92,6 +94,9 @@ public class Draw extends Component {
                 {
                     File file = fc.getSelectedFile();
                     readFile = new ReadFile(file.getPath());
+                    Draw draw = new Draw(readFile.tiles, readFile.board);
+                    draw.showTileList();
+                    draw.showBoard(-1);
                 }
             }
         });
@@ -112,25 +117,27 @@ public class Draw extends Component {
         controlPanel.setVisible(true);
         controlPanel.setFocusable(true);
 
-        JCheckBox enableSpin = new JCheckBox("Enable Rotation");
-        enableSpin.setBackground(Color.white);
-        enableSpin.setBorder(BorderFactory.createEmptyBorder(5,5,5,5));
-        enableSpin.setSelected(false);
-        enableSpin.addActionListener(new ActionListener() {
+        JCheckBox enableSpinCheckBox = new JCheckBox("Enable Rotation");
+        enableSpinCheckBox.setBackground(Color.white);
+        enableSpinCheckBox.setBorder(BorderFactory.createEmptyBorder(5,5,5,5));
+        enableSpinCheckBox.setSelected(true);
+        enableSpinCheckBox.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
                 // TODO:
+                enableSpin = enableSpinCheckBox.isSelected();
             }
         });
 
-        JCheckBox enableSpinFlip = new JCheckBox("Rotation + Reflection");
-        enableSpinFlip.setBackground(Color.WHITE);
-        enableSpinFlip.setBorder(BorderFactory.createEmptyBorder(5,5,5,5));
-        enableSpinFlip.setSelected(false);
-        enableSpinFlip.addActionListener(new ActionListener() {
+        JCheckBox enableSpinFlipCheckBox = new JCheckBox("Rotation + Reflection");
+        enableSpinFlipCheckBox.setBackground(Color.WHITE);
+        enableSpinFlipCheckBox.setBorder(BorderFactory.createEmptyBorder(5,5,5,5));
+        enableSpinFlipCheckBox.setSelected(true);
+        enableSpinFlipCheckBox.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
                 // TODO:
+                enableSpinFlip = enableSpinFlipCheckBox.isSelected();
             }
         });
 
@@ -150,8 +157,8 @@ public class Draw extends Component {
         JPanel selctionPanel = new JPanel();
         selctionPanel.setLayout(new GridLayout(3,1));
         selctionPanel.setBackground(Color.WHITE);
-        selctionPanel.add(enableSpin);
-        selctionPanel.add(enableSpinFlip);
+        selctionPanel.add(enableSpinCheckBox);
+        selctionPanel.add(enableSpinFlipCheckBox);
         selctionPanel.add(eliminateDuplicate);
         selctionPanel.setVisible(true);
 
@@ -166,7 +173,7 @@ public class Draw extends Component {
             public void actionPerformed(ActionEvent e) {
                 // TODO:
                 TilingPuzzle tilingPuzzle = new TilingPuzzle();
-                CoverArray coverArray = new CoverArray(tiles, board);
+                CoverArray coverArray = new CoverArray(tiles, board, enableSpin, enableSpinFlip);
                 tilingPuzzle.board = board;
                 tilingPuzzle.tiles = tiles;
                 tilingPuzzle.coverArray = coverArray;
@@ -177,7 +184,8 @@ public class Draw extends Component {
                 tilingPuzzle.solve(tilingPuzzle.linkArray);
                 res = tilingPuzzle.result;
                 if(res.size() > 1)getNextSolution.setEnabled(true);
-                showBoard(solutionIndex ++);
+                if(res.size() == 0)JOptionPane.showMessageDialog(jFrame, "No solution");
+                else showBoard(solutionIndex);
                 jFrame.revalidate();
             }
         });
@@ -195,11 +203,12 @@ public class Draw extends Component {
         getNextSolution.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
+
                 showBoard(++solutionIndex);
-                getPrevSolution.setEnabled(true);
-                if(solutionIndex == res.size()){
+                if(solutionIndex == res.size()-1){
                     getNextSolution.setEnabled(false);
                 }
+                getPrevSolution.setEnabled(true);
             }
         });
 
@@ -208,6 +217,9 @@ public class Draw extends Component {
             @Override
             public void actionPerformed(ActionEvent e) {
                 showBoard(--solutionIndex);
+                if(solutionIndex <= res.size()-1){
+                    getNextSolution.setEnabled(true);
+                }
                 if(solutionIndex == 0){
                     getPrevSolution.setEnabled(false);
                 }
@@ -220,19 +232,24 @@ public class Draw extends Component {
         buttonPanel.setVisible(true);
         buttonPanel.setBackground(Color.WHITE);
         buttonPanel.add(getSolutionButton);
-        buttonPanel.add(getNextSolution);
+        JButton temp = new JButton();
+        temp.setVisible(false);
+        buttonPanel.add(temp);
         buttonPanel.add(getPrevSolution);
+        buttonPanel.add(getNextSolution);
 
 
         controlPanel.setLayout(new GridLayout(2,1));
         controlPanel.add(selctionPanel);
         controlPanel.add(buttonPanel);
+        controlPanel.setPreferredSize(new Dimension(300, 600));
 
         // Middle Layout
         tileSolution = new JPanel();
         tileSolution.setBorder(BorderFactory.createTitledBorder("Solution"));
         tileSolution.setBackground(Color.WHITE);
         tileSolution.setVisible(true);
+        tileSolution.setPreferredSize(new Dimension(boardDisplayWidth, boardDisplayHeight));
 
 
         // East Layout
@@ -240,6 +257,7 @@ public class Draw extends Component {
         allTiles.setBorder(BorderFactory.createTitledBorder("All the tiles"));
         allTiles.setBackground(Color.WHITE);
         allTiles.setVisible(true);
+        allTiles.setPreferredSize(new Dimension(400, 600));
 
 
         jFrame.setJMenuBar(menuBar);
@@ -250,7 +268,8 @@ public class Draw extends Component {
 
 
         jFrame.setVisible(true);
-        jFrame.setSize(new Dimension(800,600));
+        //jFrame.setSize(new Dimension(800,600));
+        jFrame.pack();
     }
 
 
@@ -299,11 +318,12 @@ public class Draw extends Component {
 
     public void showBoard(int index){
         tileSolution.removeAll();
-        int width = tileSolution.getWidth();
-        int height = tileSolution.getHeight();
+        int width = boardDisplayWidth;
+        int height = boardDisplayHeight;
         int blockWidth = width / board.data[0].length;
         int blockHeight = height / board.data.length;
         int length = blockWidth > blockHeight ? blockHeight : blockWidth;
+        if(length > 25)length = 40;
         int widthSize = width / length;
         int heightSize = height / length;
         int vOffset = (heightSize - board.data.length) / 2;
@@ -328,6 +348,7 @@ public class Draw extends Component {
             }
         }
         tileSolution.revalidate();
+        tileSolution.repaint();
     }
 
     public void showSolution(int index){

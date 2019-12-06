@@ -10,7 +10,7 @@ public class CoverArray {
     public int[][] boardidx;
     int tileNum = 0;
 
-    public CoverArray(List<Tile> tiles, Tile board){
+    public CoverArray(List<Tile> tiles, Tile board, boolean enableSpin, boolean enableSpinFlip){
         List<int[]> arrays = new ArrayList<>();
         this.tileNum = tiles.size();
         columnNum = board.area + tiles.size();
@@ -24,9 +24,18 @@ public class CoverArray {
 //            for(int j = 0; j < t.flipDataArrays.size(); j ++){
 //                check(t.flipDataArrays.get(j), board.data, arrays, i, tiles.size());
 //            }
-            for(int j = 0; j < t.allDataArrays.size(); j ++){
-                check(t.allDataArrays.get(j), board.data, arrays, i, tiles.size());
+            if(enableSpinFlip){
+                for(int j = 0; j < t.allDataArrays.size(); j ++){
+                    check(t.allDataArrays.get(j), board.data, arrays, i, tiles.size());
+                }
+            }else if(enableSpin){
+                for(int j = 0; j < t.spinDataArrays.size(); j ++){
+                    check(t.spinDataArrays.get(j), board.data, arrays, i, tiles.size());
+                }
+            }else{
+                check(t.data, board.data, arrays, i, tiles.size());
             }
+
         }
         coverArray = new int[arrays.size()][arrays.get(0).length];
         for(int i = 0; i < coverArray.length; i ++){

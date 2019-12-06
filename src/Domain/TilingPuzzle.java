@@ -22,7 +22,7 @@ public class TilingPuzzle {
             System.exit(0);
         }
         ReadFile readFile = new ReadFile(args[0]);
-        CoverArray coverArray = new CoverArray(readFile.tiles, readFile.board);
+        CoverArray coverArray = new CoverArray(readFile.tiles, readFile.board, true, true);
 //        coverArray.printArray();
         TilingPuzzle tilingPuzzle = new TilingPuzzle();
         tilingPuzzle.board = readFile.board;
