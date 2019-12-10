@@ -14,6 +14,8 @@ public class TilingPuzzle {
     public List<Tile> tiles;
     public ArrayList<char[][]> result;
     int level = 0;
+    public Boolean firstTime = true;
+    public long endTime = 0;
 
     public static void main(String[] args) {
         if(args.length != 1)
@@ -117,6 +119,11 @@ public class TilingPuzzle {
         level ++;
         if(linkArray.h.right == linkArray.h || linkArray.h.left.col < linkArray.tileNum){
             //Finished
+            if(firstTime)
+            {
+                endTime = System.nanoTime();
+                firstTime = false;
+            }
             char[][] generatedSolution = generateSolution(solution);
 //            printMatrix(generatedSolution);
             putSolution(generatedSolution,eliminateDuplicate);

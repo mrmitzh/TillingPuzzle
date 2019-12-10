@@ -187,6 +187,7 @@ public class Draw extends Component {
                 tilingPuzzle.solution = new Stack<>();
                 tilingPuzzle.linkArray = new LinkArray(coverArray);
                 tilingPuzzle.result = new ArrayList<>();
+                tilingPuzzle.firstTime = true;
                 long start = System.nanoTime();
                 tilingPuzzle.solve(tilingPuzzle.linkArray,enableEliminateDuplicate);
                 long end = System.nanoTime();
@@ -195,8 +196,8 @@ public class Draw extends Component {
                 if(res.size() == 0)JOptionPane.showMessageDialog(jFrame, "No solution");
                 else
                 {
-                    JOptionPane.showMessageDialog(jFrame, "Find total solution size: " + String.valueOf(res.size()) +
-                            " With time: " + String.valueOf((double)(end-start)/1000000.0)+" ms");
+                    JOptionPane.showMessageDialog(jFrame,  "Find total solution size: " + String.valueOf(res.size()) +
+                            " With time: " + String.valueOf((double)(end-start)/1000000.0)+" ms" + " find first solution time: " + String.valueOf((double)(tilingPuzzle.endTime-start)/1000000.0) + " ms");
                     solutionIndex = 0;
                     showBoard(solutionIndex);
                 }
